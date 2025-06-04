@@ -1,0 +1,13 @@
+services:
+  web:
+    image: 'python:3.13-alpine'
+    build:
+      context: 'https://github.com/ruth1104/Sistema.git'
+    environment:
+      - DB_USER=$DB_USER
+      - DB_PASSWORD=$DB_PASSWORD
+      - DB_HOST=$DB_HOST
+      - DB_PORT=$DB_PORT
+      - DB_NAME=$DB_NAME
+    volumes:
+      - '/2826869/ruth315:/app/app/static'

@@ -10,7 +10,7 @@ bcrypt = Bcrypt()
 def create_app():
     app = Flask(__name__)
     app.config.from_object("config.Config")
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sistema'  # Mover aquí antes de init_app
+    #app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sistema'  # Mover aquí antes de init_app
 
     db.init_app(app)
     login_manager.init_app(app)

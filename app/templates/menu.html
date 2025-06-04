@@ -1,0 +1,134 @@
+<!-- Menú Superior -->
+<div class="w3-top menu-fijo">
+    <div class="w3-bar topbar w3-padding w3-card">
+        
+        <!-- Botón hamburguesa -->
+        <a href="javascript:void(0)" class="w3-bar-item w3-button w3-right w3-hide-large w3-hide-medium" onclick="w3_open()">
+            <i class="fa fa-bars"></i>
+        </a>
+
+        <!-- Menú para escritorio -->
+        <div class="w3-right w3-hide-small">
+            {% if current_user.is_authenticated %}
+                {% if current_user.rol == "Celador" %}
+
+                    <!-- Grupo: Salones y Equipos -->
+                    <div class="w3-dropdown-hover">
+                        <button class="w3-button"><i class="fa-solid fa-door-open"></i> Salones y Equipos ▾</button>
+                            <div class="w3-dropdown-content w3-bar-block w3-card-4">
+                                <a href="{{ url_for('room.index') }}" class="w3-bar-item w3-button">Salones</a>
+                                <a href="{{ url_for('equipment.index') }}" class="w3-bar-item w3-button">Equipos</a>
+                            </div>
+                    </div>
+
+                    <!-- Grupo: Registros -->
+                    <div class="w3-dropdown-hover">
+                        <button class="w3-button"><i class="fa-solid fa-user-check"></i> Registros ▾</button>
+                        <div class="w3-dropdown-content w3-bar-block w3-card-4">
+                            <a href="{{ url_for('record.index') }}" class="w3-bar-item w3-button">Registros Aprendices</a>
+                            <a href="{{ url_for('recordsIn.index') }}" class="w3-bar-item w3-button">Registros Instructores</a>
+                            <a href="{{ url_for('roomLoan.index') }}" class="w3-bar-item w3-button">Préstamos</a>
+                        </div>
+                    </div>
+
+                    <!-- Grupo: Administración -->
+                    <div class="w3-dropdown-hover">
+                        <button class="w3-button"><i class="fa-solid fa-users-cog"></i> Administración ▾</button>
+                        <div class="w3-dropdown-content w3-bar-block w3-card-4">
+                            <a href="{{ url_for('auth.indexuser') }}" class="w3-bar-item w3-button">Usuarios</a>
+                            
+                    </div>
+
+                {% elif current_user.rol == "Instructor" %}
+                    <a href="{{ url_for('roomLoan.index') }}" class="w3-bar-item w3-button"><i class="fa-solid fa-handshake"></i> Préstamos</a>
+                    <a href="{{ url_for('auth.indexuser') }}" class="w3-bar-item w3-button">Usuarios</a>
+                    <a href="{{ url_for('equipment.index') }}" class="w3-bar-item w3-button"><i class="fa-solid fa-laptop"></i> Equipos</a>
+                {% elif current_user.rol == "Aprendiz" %}
+                    
+                    <a href="{{ url_for('auth.indexuser') }}" class="w3-bar-item w3-button">Usuarios</a>
+                    <a href="{{ url_for('equipment.index') }}" class="w3-bar-item w3-button"><i class="fa-solid fa-laptop"></i> Equipos</a>
+                {% endif %}
+             {% endif %}
+
+               
+           
+        </div>
+        {% if usuario_nombre %}
+            <div class="text-end">
+                <span>Bienvenido, <strong>{{ usuario_nombre }}</strong> ({{ usuario_rol }})</span>
+                 <a href="{{ url_for('auth.logout') }}" class="w3-bar-item w3-button w3-red"><i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión</a>
+            </div>
+        {% endif %}
+
+   </div>
+</div>
+
+<!-- Menú lateral para móviles -->
+<div id="mobileMenu" class="w3-sidebar w3-bar-block w3-card w3-animate-left" style="display:none; width:250px;">
+    <button onclick="w3_close()" class="w3-bar-item w3-button w3-small w3-red">Cerrar &times;</button>
+
+    {% if current_user.is_authenticated %}
+        {% if current_user.rol == "Celador" %}
+
+            <!-- Desplegable Salones y Equipos -->
+            <button onclick="toggleDropdown('grupo1')" class="w3-button w3-block w3-left-align">Salones y Equipos ▾</button>
+            <div id="grupo1" class="w3-hide w3-bar-block">
+                <a href="{{ url_for('room.index') }}" class="w3-bar-item w3-button">Salones</a>
+                <a href="{{ url_for('equipment.index') }}" class="w3-bar-item w3-button">Equipos</a>
+            </div>
+            
+            <button onclick="toggleDropdown('grupo1')" class="w3-button w3-block w3-left-align">Salones y Equipos ▾</button>
+            <div id="grupo1" class="w3-hide w3-bar-block">
+                <a href="{{ url_for('room.index') }}" class="w3-bar-item w3-button">Salones</a>
+                <a href="{{ url_for('equipment.index') }}" class="w3-bar-item w3-button">Equipos</a>
+            </div>
+
+            <!-- Desplegable Registros -->
+            <button onclick="toggleDropdown('grupo2')" class="w3-button w3-block w3-left-align">Registros ▾</button>
+            <div id="grupo2" class="w3-hide w3-bar-block">
+                <a href="{{ url_for('record.index') }}" class="w3-bar-item w3-button">Registros Aprendices</a>
+                <a href="{{ url_for('recordsIn.index') }}" class="w3-bar-item w3-button">Registros Instructores</a>
+                <a href="{{ url_for('roomLoan.index') }}" class="w3-bar-item w3-button">Préstamos</a>
+            </div>
+
+            <!-- Desplegable Administración -->
+            <button onclick="toggleDropdown('grupo3')" class="w3-button w3-block w3-left-align">Administración ▾</button>
+            <div id="grupo3" class="w3-hide w3-bar-block">
+                <a href="{{ url_for('auth.indexuser') }}" class="w3-bar-item w3-button">Usuarios</a>
+            </div>
+
+            
+
+        {% elif current_user.rol == "Instructor" %}
+            <a href="{{ url_for('roomLoan.index') }}" class="w3-bar-item w3-button">Préstamos</a>
+            
+            <a href="{{ url_for('equipment.index') }}" class="w3-bar-item w3-button">Equipos</a>
+        {% elif current_user.rol == "Aprendiz" %}
+            <a href="{{ url_for('auth.indexuser') }}" class="w3-bar-item w3-button">Aprendiz</a>
+            <a href="{{ url_for('equipment.index') }}" class="w3-bar-item w3-button">Equipos</a>
+        {% endif %}
+        <a href="{{ url_for('auth.logout') }}" class="w3-bar-item w3-button w3-red">Cerrar sesión</a>
+    {% endif %}
+</div>
+
+<!-- Scripts para abrir/cerrar menú lateral y desplegables -->
+<script>
+    function w3_open() {
+        document.getElementById("mobileMenu").style.display = "block";
+    }
+
+    function w3_close() {
+        document.getElementById("mobileMenu").style.display = "none";
+    }
+
+    function toggleDropdown(id) {
+        var x = document.getElementById(id);
+        if (x.classList.contains("w3-show")) {
+            x.classList.remove("w3-show");
+            x.classList.add("w3-hide");
+        } else {
+            x.classList.remove("w3-hide");
+            x.classList.add("w3-show");
+        }
+    }
+</script>

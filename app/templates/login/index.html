@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block estilo %}
+<style>
+    .bg-verde-claro { background-color: #6FC24A !important; }
+    .btn-verde-claro {
+        background-color: #6FC24A;
+        border-color: #6FC24A;
+        color: white;
+    }
+    .btn-verde-claro:hover {
+        background-color: #5ca33f;
+        border-color: #5ca33f;
+    }
+    .border-verde-claro { border-color: #6FC24A !important; }
+    .card-header { background-color: #6FC24A !important; color: white; text-align: center; }
+</style>
+{% endblock %}
+
+    {% block content %}
+    <div class="mb-4 text-end">
+    <a href="{{ url_for('auth.add') }}" class="btn btn-verde-claro">
+        <i class="bi bi-plus-lg"></i> Agregar Usuario
+    </a>
+    </div>
+
+    <div class="container mt-5">
+    <div class="card shadow rounded-4 border-verde-claro">
+        <div class="card-header bg-verde-claro text-white text-center rounded-top-4">
+        <h2 class="mb-0">Usuarios por Rol</h2>
+        </div>
+        
+        <div class="card-body">
+
+        <div class="row">
+            <!-- Aprendices -->
+        {% if current_user.rol == "Aprendiz" or current_user.rol == "Celador" %}
+            <!-- Tabla Aprendices -->
+            <div class="col-md-4 mb-4">
+            <h4 class="text-center">Aprendices</h4>
+            <div class="table-responsive">
+
+                <div class="mb-3">
+                    <input type="text" id="buscadorTabla" class="form-control" placeholder="Buscar...">
+                </div>
+                <table class="table table-bordered table-hover align-middle text-center">
+                <thead style="background-color: #E9F9E4;">
+                    <tr><th>ID</th><th>Usuario</th><th>Acciones</th></tr>
+                </thead>
+                <tbody>
+                    {% for user in users if user.rol == 'Aprendiz' %}
+                    <tr>
+                    <td>{{ user.idUser }}</td>
+                    <td>{{ user.documento }}</td>
+                    <td>{{ user.name }}</td>
+                    <td>{{ user.password }}</td>
+                    <td>{{ user.Tel }}</td>
+                    <td>{{ user.gmail }}</td>
+                    <td>
+                        <a href="{{ url_for('auth.edit', id=user.idUser) }}" class="btn btn-outline-primary btn-sm me-1">
+                        <i class="bi bi-pencil-square"></i>
+                        </a>
+                        <a href="{{ url_for('auth.delete', id=user.idUser) }}" class="btn btn-outline-danger btn-sm me-1">
+                        <i class="bi bi-trash-fill"></i>
+                        </a>
+                    </td>
+                    </tr>
+                    {% endfor %}
+        </tbody>
+        </table>
+    </div>
+    </div>
+    {% endif %}
+
+    {% if current_user.rol == "Instructor" or current_user.rol == "Celador" %}
+        <!-- Tabla Instructores -->
+        <div class="col-md-4 mb-4">
+        <h4 class="text-center">Instructores</h4>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle text-center">
+            <thead style="background-color: #E9F9E4;">
+                <tr><th>ID</th><th>Usuario</th><th>Acciones</th></tr>
+            </thead>
+            <tbody>
+                {% for user in users if user.rol == 'Instructor' %}
+                <tr>
+                <td>{{ user.idUser }}</td>
+                <td>{{ user.documento }}</td>
+                <td>{{ user.name }}</td>
+                <td>{{ user.password }}</td>
+                <td>{{ user.Tel }}</td>
+                <td>{{ user.gmail }}</td>
+                <td>
+                    <a href="{{ url_for('auth.edit', id=user.idUser) }}" class="btn btn-outline-primary btn-sm me-1">
+                    <i class="bi bi-pencil-square"></i>
+                    </a>
+                    <a href="{{ url_for('auth.delete', id=user.idUser) }}" class="btn btn-outline-danger btn-sm me-1">
+                    <i class="bi bi-trash-fill"></i>
+                    </a>
+                </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            </table>
+        </div>
+        </div>
+    {% endif %}
+
+
+    {% if current_user.rol == "Celador" %}
+        <!-- Tabla Celadores -->
+        <div class="col-md-4 mb-4">
+        <h4 class="text-center">Celadores</h4>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover align-middle text-center">
+            <thead style="background-color: #E9F9E4;">
+                <tr><th>ID</th><th>Usuario</th><th>Acciones</th></tr>
+            </thead>
+            <tbody>
+                {% for user in users if user.rol == 'Celador' %}
+                <tr>
+                <td>{{ user.idUser }}</td>
+                <td>{{ user.documento }}</td>
+                <td>{{ user.name }}</td>
+                <td>{{ user.Tel }}</td>
+                <td>{{ user.gmail }}</td>
+                <td>
+                    <a href="{{ url_for('auth.edit', id=user.idUser) }}" class="btn btn-outline-primary btn-sm me-1">
+                    <i class="bi bi-pencil-square"></i>
+                    </a>
+                    <a href="{{ url_for('auth.delete', id=user.idUser) }}" class="btn btn-outline-danger btn-sm me-1">
+                    <i class="bi bi-trash-fill"></i>
+                    </a>
+                </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            </table>
+        </div>
+        </div>
+
+        <script>
+            document.getElementById("buscadorTabla").addEventListener("keyup", function () {
+                let filtro = this.value.toLowerCase();
+                let filas = document.querySelectorAll(".table tbody tr");
+
+                filas.forEach(function (fila) {
+                    let textoFila = fila.innerText.toLowerCase();
+                    fila.style.display = textoFila.includes(filtro) ? "" : "none";
+                });
+            });
+        </script>
+    {% endif %}
+
+{% endblock %}

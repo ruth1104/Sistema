@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>Editar</h1>
+<form action="{{ url_for('recordsIn.edit', id=recordsIn.idRecordsIn) }}" method="POST">
+    <div class="form-group">
+        <label for="dataEntry">Entrada:</label>
+        <input type="datetime-local" name="dataEntry" id="dataEntry" class="form-control" 
+               value="{{ recordsIn.dataEntry.strftime('%Y-%m-%dT%H:%M') }}" required>
+    </div>
+
+    <div class="form-group">
+        <label for="dataExit">Salida:</label>
+        <input type="datetime-local" name="dataExit" id="dataExit" class="form-control"
+               value="{{ recordsIn.dataExit.strftime('%Y-%m-%dT%H:%M') }}" required>
+    </div>
+
+    <div class="form-group">
+        <label for="instructorId">Instructor:</label>
+        <select name="instructorId" id="instructorId" class="form-control" required>
+            {% for instructor in idata %}
+                <option value="{{ instructor.idInstructor }}" 
+                        {% if instructor.idUser == recordsIn.instructorId %} selected {% endif %}>
+                    {{ instructor.documento }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+
+    <div class="form-group">
+        <label for="equipmentId">Equipo:</label>
+        <select name="equipmentId" id="equipmentId" class="form-control" required>
+            {% for equipment in equipment %}
+                <option value="{{ equipment.idEquipment }}" 
+                        {% if equipment.idEquipment == recordsIn.equipmentId %} selected {% endif %}>
+                    {{ equipment.codeEquipment }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label for="wachimanId" class="form-label">Celador:</label>
+        <select class="form-select" id="wachimanId" name="wachimanId" required>
+            <option value="" disabled>- Seleccionar Celador -</option>
+            {% for celador in wdata %}
+            <option value="{{ celador.idUser }}"
+                {% if celador.idUser == recordsIn.wachimanId|int %} selected {% endif %}>
+                {{ celador.documento }}
+            </option>
+            {% endfor %}
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+</form>
+
+<a href="{{ url_for('recordsIn.index') }}" class="btn btn-secondary">Volver</a>
+{% endblock %}

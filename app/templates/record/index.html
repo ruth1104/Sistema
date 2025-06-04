@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+
+{% block estilo %}
+<style>
+    .bg-verde-claro {
+        background-color: #6FC24A !important;
+    }
+
+    .btn-verde-claro {
+        background-color: #6FC24A;
+        border-color: #6FC24A;
+        color: white;
+    }
+
+    .btn-verde-claro:hover {
+        background-color: #5ca33f;
+        border-color: #5ca33f;
+    }
+
+    .border-verde-claro {
+        border-color: #6FC24A !important;
+    }
+
+    .modal {
+        z-index: 1000 !important;
+    }
+
+    .modal-backdrop {
+        z-index: -1 !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow rounded-4 border-verde-claro">
+        <div class="card-header bg-verde-claro text-white text-center rounded-top-4">
+            <h2 class="mb-0">Entrada de Equipos Aprendices</h2>
+        </div>
+        <div class="card-body">
+            <div class="mb-3 d-flex justify-content-between">
+                <a href="{{ url_for('record.add') }}" class="btn btn-verde-claro btn-sm">
+                    <i class="bi bi-plus-circle"></i> Registrar Equipo
+                </a>
+                <a href="#" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#qrReaderModal">
+                    <i class="bi bi-qr-code-scan"></i> Registrar por QR
+                </a>
+                
+                <form method="POST" action="{{ url_for('record.generar_pdf_apr') }}">
+                    <label for="fecha_inicio">Desde:</label>
+                    <input type="datetime-local" id="fecha_inicio" name="fecha_inicio" required>
+
+                    <label for="fecha_fin">Hasta:</label>
+                    <input type="datetime-local" id="fecha_fin" name="fecha_fin" required>
+
+                    <button href="{{ url_for('record.generar_pdf_apr') }}" target="_blank" class="btn btn-verde-claro"> PDF</button>
+                </form>
+
+            </div>
+            <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+                <div class="mb-3">
+                    <input type="text" id="buscadorTabla" class="form-control" placeholder="Buscar...">
+                </div>
+                <table class="table table-bordered table-hover text-center align-middle" id="records-table">
+                    <thead style="background-color: #E9F9E4;">
+                        <tr>
+                            <th>ID</th>
+                            <th>Fecha Entrada</th>
+                            <th>Fecha Salida</th>
+                            <th>Aprendiz</th>
+                            <th>Código de equipo</th>
+                            <th>Celador</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in data %}
+                        <tr>
+                            <td>{{ record.idRecords }}</td>
+                            <td>{{ record.dataEntry }}</td>
+                            <td id="data-exit-{{ record.idRecords }}">
+                                {% if record.dataExit %}
+                                    <span class="badge bg-success">{{ record.dataExit }}</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Equipo en el centro</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#modal{{ record.idRecords }}">
+                                    {{ record.apprentice.name }}
+                                </button>
+                                <!-- Modales por Aprendiz -->
+
+<div class="modal fade" id="modal{{ record.idRecords }}" tabindex="-1" aria-labelledby="modalLabel{{ record.idRecords }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content rounded-3">
+            <div class="modal-header bg-verde-claro text-white">
+                <h5 class="modal-title" id="modalLabel{{ record.idRecords }}">Información del Aprendiz</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body text-start">
+                <p><strong>ID:</strong> {{ record.apprentice.idUser }}</p>
+                <p><strong>Nombre:</strong> {{ record.apprentice.name }}</p>
+                <p><strong>Documento:</strong> {{ record.apprentice.documento }}</p>
+                <p><strong>Telefono:</strong> {{ record.apprentice.Tel }}</p>
+                <p><strong>correo:</strong> {{ record.apprentice.gmail }}</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+                            </td>
+                            <td>{{ record.equipment.codeEquipment }}</td>
+                            <td>{{ record.wachiman.name }}</td>
+                            <td>
+                                <div class="d-flex flex-column gap-1">
+                                    <a href="{{ url_for('record.edit', id=record.idRecords) }}" class="btn btn-outline-primary btn-sm me-1">Editar</a>
+                                    <a href="{{ url_for('record.delete', id=record.idRecords) }}" class="btn btn-outline-danger btn-sm me-1">Eliminar</a>
+                                    <button class="btn btn-sm btn-success btn-salida" 
+                                            data-id="{{ record.idRecords }}" 
+                                            data-url="{{ url_for('record.salida', id=record.idRecords) }}">
+                                        Salida
+                                    </button>
+
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Lector QR -->
+<div class="modal fade" id="qrReaderModal" tabindex="-1" aria-labelledby="qrReaderModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content rounded-3">
+            <div class="modal-header bg-verde-claro text-white">
+                <h5 class="modal-title" id="qrReaderModalLabel">Lector de Código QR</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <div id="reader" style="width: 100%;"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='html5-qrcode.min.js') }}"></script>
+<script>
+    let html5QrcodeScanner;
+    let qrYaLeido = false;
+
+    function onScanSuccess(decodedText, decodedResult) {
+        if (qrYaLeido) return;
+        qrYaLeido = true;
+
+        try {
+            const jsonObject = JSON.parse(decodedText);
+            const id = jsonObject.ID;
+            window.location.href = `/record/addqr/${id}`;
+        } catch (error) {
+            console.error("Error al parsear el QR:", error);
+            alert(`Error en el QR: ${decodedText}`);
+        }
+    }
+
+    function onScanFailure(error) {
+        console.warn(`Error de escaneo: ${error}`);
+    }
+
+    const qrReaderModal = document.getElementById('qrReaderModal');
+    qrReaderModal.addEventListener('shown.bs.modal', function () {
+        html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
+        html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+    });
+
+    qrReaderModal.addEventListener('hidden.bs.modal', function () {
+        if (html5QrcodeScanner) {
+            html5QrcodeScanner.clear().then(() => {
+                console.log("Lector de QR detenido.");
+                qrYaLeido = false;
+            }).catch((error) => {
+                console.error("Error al detener el lector de QR:", error);
+            });
+        }
+    });
+    document.querySelectorAll('.btn-salida').forEach(button => {
+        button.addEventListener('click', function () {
+            const id = this.getAttribute('data-id');
+            const url = this.getAttribute('data-url');
+            const td = document.getElementById(`data-exit-${id}`);
+
+            fetch(url, { method: 'POST' })  // Asegúrate que esta ruta soporte POST
+                .then(response => {
+                    if (response.ok) {
+                        const now = new Date();
+                        const formattedDate = now.toLocaleString();  // Puedes formatear más si deseas
+                        td.innerHTML = `<span class="badge bg-success">${formattedDate}</span>`;
+                        this.remove();  // Oculta el botón después de usarlo
+                    } else {
+                        alert("Error al registrar la salida.");
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("Error de conexión.");
+                });
+        });
+    });
+
+    document.getElementById("buscadorTabla").addEventListener("keyup", function () {
+        let filtro = this.value.toLowerCase();
+        let filas = document.querySelectorAll(".table tbody tr");
+
+        filas.forEach(function (fila) {
+            let textoFila = fila.innerText.toLowerCase();
+            fila.style.display = textoFila.includes(filtro) ? "" : "none";
+        });
+    });
+</script>
+
+{% endblock %}

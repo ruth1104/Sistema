@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Agregar Salon</title>
+</head>
+<body>
+    {% include 'menu.html'%}
+</br>
+    <h1>Agregar Ambiente</h1>
+    <form action="{{ url_for('room.add') }}" method="post">
+        <label for="nameRoom">Nombre de Ambiente: </label>
+        <input type="text" id="nameRoom" name="nameRoom" placeholder="Salon"  required>
+
+        <button type="submit">Agregar </button>
+    </form>
+</body>
+</html>

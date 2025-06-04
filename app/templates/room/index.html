@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .bg-verde-claro {
+        background-color: #6FC24A !important;
+    }
+
+    .text-verde-claro {
+        color: #6FC24A !important;
+    }
+
+    .btn-verde-claro {
+        background-color: #6FC24A;
+        border-color: #6FC24A;
+        color: white;
+    }
+
+    .btn-verde-claro:hover {
+        background-color: #5ca33f;
+        border-color: #5ca33f;
+    }
+
+    .border-verde-claro {
+        border-color: #6FC24A !important;
+    }
+    .modal {
+            z-index: 1000 !important;
+    }
+
+    .modal-backdrop {
+        z-index: -1 !important;
+    } 
+</style>
+
+<div class="container mt-5">
+    <div class="card shadow rounded-4 border-verde-claro">
+        <div class="card-header bg-verde-claro text-white text-center rounded-top-4">
+            <h2 class="mb-0">Ambientes</h2>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered align-middle text-center table-hover">
+                    <thead style="background-color: #E9F9E4;">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre del Ambiente</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for room in data %}
+                        <tr>
+                            <td>{{ room.idRoom }}</td>
+                            <td>{{ room.nameRoom }}</td>
+                            <td>
+                                <a href="{{ url_for('room.edit', id=room.idRoom) }}" class="btn btn-outline-success btn-sm me-1">
+                                    Editar
+                                </a>
+                                <a href="{{ url_for('room.delete', id=room.idRoom) }}" class="btn btn-outline-danger btn-sm me-1">
+                                    Eliminar
+                                </a>
+                                <button class="btn btn-sm btn-verde-claro" data-bs-toggle="modal" data-bs-target="#qrModal{{ room.idRoom }}">
+                                    Ver QR
+                                </button>
+                            </td>
+                        </tr>
+
+                        <!-- Modal QR -->
+                        <div class="modal fade" id="qrModal{{ room.idRoom }}" tabindex="-1" aria-labelledby="qrModalLabel{{ room.idRoom }}" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="qrModalLabel{{ room.idRoom }}">Código QR del Salón</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                    </div>
+                                    <div class="modal-body text-center">
+                                        <img src="{{ url_for('room.generate_qr', id=room.idRoom) }}" alt="Código QR" class="img-fluid">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="text-end mt-3">
+                <a href="{{ url_for('room.add') }}" class="btn btn-verde-claro btn-sm">
+                    Agregar Ambiente
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

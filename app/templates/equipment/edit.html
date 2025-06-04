@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block estilo %}
+<style>
+    .bg-verde-claro {
+        background-color: #6FC24A !important;
+    }
+
+    .btn-verde-claro {
+        background-color: #6FC24A;
+        border-color: #6FC24A;
+        color: white;
+    }
+
+    .btn-verde-claro:hover {
+        background-color: #5ca33f;
+        border-color: #5ca33f;
+    }
+
+    .border-verde-claro {
+        border-color: #6FC24A !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow rounded-4 border-verde-claro">
+        <div class="card-header bg-verde-claro text-white text-center rounded-top-4">
+            <h2 class="mb-0">Editar Equipo</h2>
+        </div>
+        <div class="card-body">
+            <form action="{{ url_for('equipment.edit', id=equipment.idEquipment) }}" method="post">
+                <div class="mb-3">
+                    <label for="brandEquipment" class="form-label">Marca:</label>
+                    <input type="text" class="form-control" id="brandEquipment" name="brandEquipment"
+                           value="{{ equipment.brandEquipment }}" placeholder="Marca del equipo" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="codeEquipment" class="form-label">Código:</label>
+                    <input type="text" class="form-control" id="codeEquipment" name="codeEquipment"
+                           value="{{ equipment.codeEquipment }}" placeholder="Código del equipo" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="accassoriesEquipment" class="form-label">Accesorios:</label>
+                    <input type="text" class="form-control" id="accassoriesEquipment" name="accassoriesEquipment"
+                           value="{{ equipment.accassoriesEquipment }}" placeholder="Accesorios incluidos" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="apprenticeId" class="form-label">Aprendiz:</label>
+                    <select class="form-select" id="apprenticeId" name="apprenticeId">
+                        {% for apprentice in apprentices %}
+                            <option value="{{ apprentice.idApprentice }}"
+                                {% if apprentice.idApprentice == equipment.apprenticeId %}selected{% endif %}>
+                                {{ apprentice.nameApprentice }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="wachimanId" class="form-label">Celador:</label>
+                    <select class="form-select" id="wachimanId" name="wachimanId" required>
+                        <option value="" disabled>- Seleccionar Celador -</option>
+                        {% for celador in wdata %}
+                        <option value="{{ celador.idUser }}"
+                            {% if celador.idUser == record.wachimanId|int %} selected {% endif %}>
+                            {{ celador.documento }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="text-end">
+                    <button type="submit" class="btn btn-verde-claro">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

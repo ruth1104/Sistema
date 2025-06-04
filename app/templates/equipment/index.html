@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block estilo %}
+<style>
+    .modal {
+        z-index: 1060 !important;
+    }
+
+    .modal-backdrop {
+        z-index: -1 !important;
+        opacity: 0 !important;
+    }
+
+    nav.navbar {
+        z-index: 1030 !important;
+    }
+
+    .sticky-top {
+        top: 56px;
+        z-index: 1001;
+    }
+
+    .bg-verde-claro {
+        background-color: #6FC24A !important;
+    }
+
+    .btn-verde-claro {
+        background-color: #6FC24A;
+        border-color: #6FC24A;
+        color: white;
+    }
+
+    .btn-verde-claro:hover {
+        background-color: #5ca33f;
+        border-color: #5ca33f;
+    }
+
+    .border-verde-claro {
+        border-color: #6FC24A !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow rounded-4 border-verde-claro">
+        <div class="card-header bg-verde-claro text-white text-center rounded-top-4">
+            <h2 class="mb-0">Equipos</h2>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+                <table class="table table-bordered table-hover align-middle text-center">
+                    <thead style="background-color: #E9F9E4;">
+                        <tr>
+                            <th>ID</th>
+                            <th>Marca</th>
+                            <th>Código</th>
+                            <th>Accesorios</th>
+                            <th>Aprendiz</th>
+                            <th>Instructor</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for equipment in data %}
+                        <tr>
+                            <td>{{ equipment.idEquipment }}</td>
+                            <td>{{ equipment.brandEquipment }}</td>
+                            <td>{{ equipment.codeEquipment }}</td>
+                            <td>{{ equipment.accassoriesEquipment }}</td>
+                            <td>{{ equipment.apprentice.documento }}</td>
+                            <td>{{ equipment.instructor.documento }}</td>
+                            <td>
+                                <a href="{{ url_for('equipment.edit', id=equipment.idEquipment) }}" class="btn btn-outline-primary btn-sm me-1">Editar</a>
+                                <a href="{{ url_for('equipment.delete', id=equipment.idEquipment) }}" class="btn btn-outline-danger btn-sm me-1">Eliminar</a>
+                                <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#qrModal{{ equipment.idEquipment }}">
+                                    Ver QR
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        
+                    </tbody>
+                </table>
+                </div>
+                {% for equipment in data %}
+                    <div class="modal fade" id="qrModal{{ equipment.idEquipment }}" tabindex="-1" aria-labelledby="qrModalLabel{{ equipment.idEquipment }}" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="qrModalLabel{{ equipment.idEquipment }}">Código QR</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                </div>
+                                <div class="modal-body text-center">
+                                    <img src="{{ url_for('equipment.generate_qr', id=equipment.idEquipment) }}"
+                                        alt="Código QR"
+                                        class="img-fluid">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                
+            
+            <div class="text-end mt-3">
+                <a href="{{ url_for('equipment.add') }}" class="btn btn-verde-claro btn-sm">
+                    Agregar Equipo
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends "base.html" %} 
+{% block content %}
+<h1 class="display-4 mb-4">Resguistrar Equipo Instructor</h1>
+
+<form action="{{ url_for('recordsIn.add') }}" method="POST" class="form-group p-4 border rounded shadow-sm">
+  <div class="mb-3">
+    <label for="dataEntry" class="form-label">Entrega:</label>
+<input type="datetime-local" id="dataEntry" name="dataEntry" class="form-control rounded-pill" required />
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    let now = new Date();
+    let year = now.getFullYear();
+    let month = String(now.getMonth() + 1).padStart(2, "0"); // Asegura dos dígitos
+    let day = String(now.getDate()).padStart(2, "0");
+    let hours = String(now.getHours()).padStart(2, "0");
+    let minutes = String(now.getMinutes()).padStart(2, "0");
+
+    let currentDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+    document.getElementById("dataEntry").value = currentDateTime;
+  });
+</script>
+  </div>
+  
+  <div class="mb-3">
+      <label for="instructorId" class="form-label">Instructor:</label>
+      <select name="instructorId" id="instructorId" class="form-select rounded-pill" required>
+        <option value="0">- Seleccionar Instructor-</option>
+        {% for instructor in idata %}
+        <option value="{{ instructor.idUser }}"> {{ instructor.documento }} </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label for="equipmentId" class="form-label">Equipo:</label>
+      <select name="equipmentId" id="equipmentId" class="form-select rounded-pill" required>
+        <option value="0">- Seleccionar Equipo-</option>
+        {% for equipment in equipments %}
+        <option value="{{ equipment.idEquipment }}"> {{ equipment.codeEquipment }} </option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label for="wachimanId" class="form-label">Celador:</label>
+      <select name="wachimanId" id="wachimanId" class="form-select rounded-pill" required>
+        <option value="0">- Seleccionar Celador-</option>
+        {% for celador in wdata %}
+        <option value="{{ celador.idUser }}">{{ celador.documento }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary rounded-pill">Agregar</button>
+</form>
+<a href="{{ url_for('recordsIn.index') }}" class="btn btn-secondary rounded-pill">Volver</a>
+{% endblock %}

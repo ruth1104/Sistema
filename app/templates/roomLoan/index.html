@@ -1,0 +1,221 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .bg-verde-claro {
+        background-color: #6FC24A !important;
+    }
+
+    .btn-verde-claro {
+        background-color: #6FC24A;
+        border-color: #6FC24A;
+        color: white;
+    }
+
+    .btn-verde-claro:hover {
+        background-color: #5ca33f;
+        border-color: #5ca33f;
+    }
+
+    .border-verde-claro {
+        border-color: #6FC24A !important;
+    }
+
+    .btn-blue {
+        background-color: #0d6efd;
+        color: white;
+    }
+
+    .btn-blue:hover {
+        background-color: #0b5ed7;
+    }
+    .modal {
+            z-index: 1000 !important;
+    }
+
+    .modal-backdrop {
+        z-index: -1 !important;
+    } 
+</style>
+
+<div class="container mt-5">
+    <div class="card shadow rounded-4 border-verde-claro">
+        <div class="card-header bg-verde-claro text-white text-center rounded-top-4">
+            <h2 class="mb-0">Ambientes Entregados</h2>
+        </div>
+        <div class="card-body">
+            <div class="mb-3 d-flex justify-content-between">
+                <a href="{{ url_for('roomLoan.add') }}" class="btn btn-verde-claro btn-sm">
+                    <i class="bi bi-plus-circle"></i> Registrar Ambiente
+                </a>
+                <a href="#" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#qrReaderModal">
+                    <i class="bi bi-qr-code-scan"></i> Registrar por QR
+                </a>
+              <form method="POST" action="{{ url_for('roomLoan.generar_pdf_room') }}">
+                    <label for="fecha_inicio">Desde:</label>
+                    <input type="datetime-local" id="fecha_inicio" name="fecha_inicio" required>
+
+                    <label for="fecha_fin">Hasta:</label>
+                    <input type="datetime-local" id="fecha_fin" name="fecha_fin" required>
+
+                    <button href="{{ url_for('roomLoan.generar_pdf_room') }}" target="_blank" class="btn btn-verde-claro">PDF</button>
+                </form>
+            </div>
+
+            <div class="mb-3">
+                <input type="text" id="buscadorTabla" class="form-control" placeholder="Buscar...">
+            </div>
+            <div class="table-responsive">
+                <table class="table table-bordered align-middle text-center table-hover" id="roomloan-table">
+                    <thead style="background-color: #E9F9E4;">
+                        <tr>
+                            <th>ID</th>
+                            <th>Fecha de Entrega</th>
+                            <th>Fecha de Devolución</th>
+                            <th>Instructor</th>
+                            <th>Celador</th>
+                            <th>Ambiente</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for roomLoan in roomLoan %}
+                        <tr>
+                            <td>{{ roomLoan.idRoomLoan }}</td>
+                            <td>{{ roomLoan.date }}</td>
+                            <td id="data-exit-{{ roomLoan.idRoomLoan }}">
+                                {% if roomLoan.returnDate %}
+                                    <span class="badge bg-success">{{ roomLoan.returnDate }}</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Equipo en el centro</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ roomLoan.instructor.documento }}</td>
+                            <td>{{ roomLoan.wachiman.documento }}</td>
+                            <td>{{ roomLoan.room.nameRoom }}</td>
+                            <td>
+                                <div class="d-flex justify-content-between gap-1">
+                                    <a href="{{ url_for('roomLoan.edit', id=roomLoan.idRoomLoan) }}" class="btn btn-outline-primary btn-sm me-1">Editar</a>
+                                    <a href="{{ url_for('roomLoan.delete', id=roomLoan.idRoomLoan) }}" class="btn btn-outline-danger btn-sm me-1">Eliminar</a>
+                                  <button class="btn btn-sm btn-success btn-salida" 
+                                            data-id="{{ roomLoan.idRoomLoan }}" 
+                                            data-url="{{ url_for('roomLoan.devolver', id=roomLoan.idRoomLoan) }}">
+                                        Devolver
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+        </div>
+    </div>
+
+
+
+    <!-- Modal para lector de QR -->
+    <div class="modal fade" id="qrReaderModal" tabindex="-1" aria-labelledby="qrReaderModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content rounded-3">
+                <div class="modal-header bg-verde-claro text-white">
+                    <h5 class="modal-title" id="qrReaderModalLabel">Lector de Código QR</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <div id="reader" style="width: 100%;"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script del lector QR -->
+<script src="{{ url_for('static', filename='html5-qrcode.min.js') }}"></script>
+<script>
+    let html5QrcodeScanner;
+    let qrYaLeido = false;
+
+    function onScanSuccess(decodedText, decodedResult) {
+        if (qrYaLeido) return; // Evita múltiples ejecuciones
+        qrYaLeido = true;
+
+        try {
+            const jsonObject = JSON.parse(decodedText);
+            const id = jsonObject.ID;
+            document.getElementById('roomIdInput').value = id;
+
+            // Ocultar modal QR y mostrar el de instructor
+            const qrModal = bootstrap.Modal.getInstance(document.getElementById('qrReaderModal'));
+            qrModal.hide();
+
+            const instructorModal = new bootstrap.Modal(document.getElementById('instructorModal'));
+            instructorModal.show();
+        } catch (error) {
+            console.error("Error al parsear el QR:", error);
+            alert(`Error en el QR: ${decodedText}`);
+        }
+    }
+
+    function onScanFailure(error) {
+        console.warn(`Error de escaneo: ${error}`);
+    }
+
+    const qrReaderModal = document.getElementById('qrReaderModal');
+    qrReaderModal.addEventListener('shown.bs.modal', function () {
+        html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
+        html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+    });
+
+    qrReaderModal.addEventListener('hidden.bs.modal', function () {
+        if (html5QrcodeScanner) {
+            html5QrcodeScanner.clear().then(() => {
+                console.log("Lector de QR detenido.");
+                qrYaLeido = false;
+            }).catch((error) => {
+                console.error("Error al detener el lector de QR:", error);
+            });
+        }
+    });
+
+    document.querySelectorAll('.btn-salida').forEach(button => {
+        button.addEventListener('click', function () {
+            const id = this.getAttribute('data-id');
+            const url = this.getAttribute('data-url');
+            const td = document.getElementById(`data-exit-${id}`);
+
+            fetch(url, { method: 'POST' })  // Asegúrate que esta ruta soporte POST
+                .then(response => {
+                    if (response.ok) {
+                        const now = new Date();
+                        const formattedDate = now.toLocaleString();  // Puedes formatear más si deseas
+                        td.innerHTML = `<span class="badge bg-success">${formattedDate}</span>`;
+                        this.remove();  // Oculta el botón después de usarlo
+                    } else {
+                        alert("Error al registrar la salida.");
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("Error de conexión.");
+                });
+        });
+    });
+
+    document.getElementById("buscadorTabla").addEventListener("keyup", function () {
+        let filtro = this.value.toLowerCase();
+        let filas = document.querySelectorAll(".table tbody tr");
+
+        filas.forEach(function (fila) {
+            let textoFila = fila.innerText.toLowerCase();
+            fila.style.display = textoFila.includes(filtro) ? "" : "none";
+        });
+    });
+</script>
+
+
+{% endblock %}

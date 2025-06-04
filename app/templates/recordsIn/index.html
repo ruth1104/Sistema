@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+
+{% block estilo %}
+<style>
+    .bg-verde-claro {
+        background-color: #6FC24A !important;
+    }
+
+    .btn-verde-claro {
+        background-color: #6FC24A;
+        border-color: #6FC24A;
+        color: white;
+    }
+
+    .btn-verde-claro:hover {
+        background-color: #5ca33f;
+        border-color: #5ca33f;
+    }
+
+    .border-verde-claro {
+        border-color: #6FC24A !important;
+    }
+
+    .card-header {
+        background-color: #6FC24A !important;
+        color: white;
+        text-align: center;
+    }
+
+    .table-responsive {
+        max-width: 100%;
+        overflow-x: auto;
+    }
+
+    .scroll-table {
+    max-height: 400px; /* Ajusta la altura como necesites */
+    overflow-y: auto;
+    }
+    .modal {
+            z-index: 1000 !important;
+    }
+
+    .modal-backdrop {
+        z-index: -1 !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow rounded-4 border-verde-claro">
+        <div class="card-header bg-verde-claro text-white text-center rounded-top-4">
+            <h2 class="mb-0">Entrada Equipo de Instructores</h2>
+        </div>
+        <div class="card-body">
+            
+
+            <div class="mb-3 d-flex justify-content-between">
+                <a href="{{ url_for('recordsIn.add') }}" class="btn btn-verde-claro btn-sm">
+                    <i class="bi bi-plus-circle"></i> Registrar Equipo
+                </a>
+                <a href="#" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#qrReaderModal">
+                    <i class="bi bi-qr-code-scan"></i> Registrar por QR
+                </a>
+            <form method="POST" action="{{ url_for('recordsIn.generar_pdf_Ins') }}">
+                <label for="fecha_inicio">Desde:</label>
+                <input type="datetime-local" id="fecha_inicio" name="fecha_inicio" required>
+
+                <label for="fecha_fin">Hasta:</label>
+                <input type="datetime-local" id="fecha_fin" name="fecha_fin" required>
+
+                <button href="{{ url_for('recordsIn.generar_pdf_Ins') }}" target="_blank" class="btn btn-verde-claro">PDF</button>
+            </form>
+         </div>
+            <div class="mb-3">
+                <input type="text" id="buscadorTabla" class="form-control" placeholder="Buscar...">
+            </div>
+            <div class= "table-responsive scroll-table">
+                <table class="table table-bordered table-hover align-middle text-center">
+                    <thead style="background-color: #E9F9E4;">
+                        <tr>
+                            <th>ID</th>
+                            <th>Entrada</th>
+                            <th>Salida</th>
+                            <th>Instructor</th>
+                            <th>Código de Equipo</th>
+                            <th>Celador</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for recordsIn in data %}
+                        <tr >
+                            <td>{{ recordsIn.idRecordsIn }}</td>
+                            <td>{{ recordsIn.dataEntry }}</td>
+                            <td id="data-exit-{{ recordsIn.idRecordsIn }}">
+                                {% if recordsIn.dataExit %}
+                                    <span class="badge bg-success">{{ recordsIn.dataExit }}</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Equipo en el centro</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-link p-0" data-bs-toggle="modal" data-bs-target="#modal{{ recordsIn.idRecordsIn }}">
+                                    {{ recordsIn.instructor.name }}
+                                </button>
+                                <!-- Modal Instructor -->
+                                <div class="modal fade" id="modal{{ recordsIn.idRecordsIn }}" tabindex="-1" aria-labelledby="modalLabel{{ recordsIn.idRecordsIn }}" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content rounded-3">
+                                            <div class="modal-header bg-verde-claro text-white">
+                                                <h5 class="modal-title" id="modalLabel{{ recordsIn.idRecordsIn }}">Información del Instructor</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                            </div>
+                                            <div class="modal-body text-start">
+                                                <p><strong>ID:</strong> {{ recordsIn.instructor.idUser }}</p>
+                                                <p><strong>Nombre:</strong> {{ recordsIn.instructor.name }}</p>
+                                                <p><strong>Documento:</strong> {{ recordsIn.instructor.documento }}</p>
+                                                <p><strong>Telefono:</strong> {{ recordsIn.instructor.Tel }}</p>
+                                                <p><strong>Correo:</strong> {{ recordsIn.instructor.gmail }}</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                </td>
+                            <td>{{ recordsIn.equipment.codeEquipment }}</td>
+                            <td>{{ recordsIn.wachiman.name }}</td>
+                            <td>{{ recordsIn.instructor.documento | lower }}</td>
+                            
+                            <td>
+                                <div class="d-flex flex-column gap-2">
+                                    <a href="{{ url_for('recordsIn.edit', id=recordsIn.idRecordsIn) }}" class="btn btn-outline-primary btn-sm me-1">Editar</a>
+                                    <a href="{{ url_for('recordsIn.delete', id=recordsIn.idRecordsIn) }}" class="btn btn-sm btn-outline-danger btn-sm me-1">Eliminar</a>
+                                    <button class="btn btn-sm btn-success btn-salida" 
+                                            data-id="{{ recordsIn.idRecordsIn}}" 
+                                            data-url="{{ url_for('recordsIn.salida', id=recordsIn.idRecordsIn) }}">
+                                        Salida
+                                    </button>
+
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Lector QR -->
+    <div class="modal fade" id="qrReaderModal" tabindex="-1" aria-labelledby="qrReaderModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content rounded-3">
+                <div class="modal-header bg-verde-claro text-white">
+                    <h5 class="modal-title" id="qrReaderModalLabel">Lector de Código QR</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <div id="reader" style="width: 100%; height: auto;"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Script del lector QR -->
+<script src="{{ url_for('static', filename='html5-qrcode.min.js') }}"></script>
+<script>
+    let html5QrcodeScanner;
+
+    function onScanSuccess(decodedText, decodedResult) {
+        try {
+            const jsonObject = JSON.parse(decodedText);
+            const id = jsonObject.ID;
+            window.location.href = `/recordsIn/addqr/${id}`;
+        } catch (error) {
+            console.error("Error al parsear el QR:", error);
+            alert(`Error en el QR: ${decodedText}`);
+        }
+    }
+
+    function onScanFailure(error) {
+        console.warn(`Error de escaneo: ${error}`);
+    }
+
+    const qrReaderModal = document.getElementById('qrReaderModal');
+    qrReaderModal.addEventListener('shown.bs.modal', function () {
+        html5QrcodeScanner = new Html5QrcodeScanner("reader", { fps: 10, qrbox: 250 });
+        html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+    });
+
+    qrReaderModal.addEventListener('hidden.bs.modal', function () {
+        if (html5QrcodeScanner) {
+            html5QrcodeScanner.clear().then(() => console.log("Lector de QR detenido."))
+                                  .catch(err => console.error("Error al detener el lector de QR:", err));
+        }
+    });
+    document.querySelectorAll('.btn-salida').forEach(button => {
+        button.addEventListener('click', function () {
+            const id = this.getAttribute('data-id');
+            const url = this.getAttribute('data-url');
+            const td = document.getElementById(`data-exit-${id}`);
+
+            fetch(url, { method: 'POST' })  // Asegúrate que esta ruta soporte POST
+                .then(response => {
+                    if (response.ok) {
+                        const now = new Date();
+                        const formattedDate = now.toLocaleString();  // Puedes formatear más si deseas
+                        td.innerHTML = `<span class="badge bg-success">${formattedDate}</span>`;
+                        this.remove();  // Oculta el botón después de usarlo
+                    } else {
+                        alert("Error al registrar la salida.");
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("Error de conexión.");
+                });
+        });
+    });
+
+    document.getElementById("buscadorTabla").addEventListener("keyup", function () {
+        let filtro = this.value.toLowerCase();
+        let filas = document.querySelectorAll(".table tbody tr");
+
+        filas.forEach(function (fila) {
+            let textoFila = fila.innerText.toLowerCase();
+            fila.style.display = textoFila.includes(filtro) ? "" : "none";
+        });
+    });
+</script>
+{% endblock %}

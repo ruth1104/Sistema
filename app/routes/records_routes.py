@@ -114,7 +114,11 @@ def salida(id):
     record.dataExit = datetime.now()
     db.session.commit()
   
-    return jsonify({"message": "Salida registrada correctamente"}), 200
+    return jsonify({
+        "message": "Salida registrada correctamente",
+        "fecha": record.dataExit.strftime("%Y-%m-%d %H:%M:%S")
+    }), 200
+
 
 
 @bp.route('/record/get_data_by_qr', methods=['GET'])

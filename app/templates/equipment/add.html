@@ -1,76 +1,74 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Agregar Equipo</title>
+{% extends "base.html" %}
 
-  <!-- Bootstrap 5 CDN -->
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-  />
-</head>
-<body class="bg-light">
+{% block estilo %}
+<style>
+    .form-container {
+        max-width: 600px;
+        margin: 30px auto;
+        background: #fff;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    .btn-verde {
+        background-color: #6FC24A;
+        border-color: #6FC24A;
+        color: white;
+    }
+    .btn-verde:hover {
+        background-color: #5ca33f;
+        border-color: #5ca33f;
+        color: white;
+    }
+</style>
+{% endblock %}
 
-  {% include 'menu.html'%}
-
-  <div class="container mt-5">
-    <h1 class="text-center mb-4">Agrega tu Equipo</h1>
-
-    <div class="card shadow-lg mx-auto" style="max-width: 600px;">
-      <div class="card-body">
-        <form action="{{ url_for('equipment.add') }}" method="post">
-          <div class="mb-3">
-            <label for="brandEquipment" class="form-label">Marca</label>
-            <input type="text" class="form-control" id="brandEquipment" name="brandEquipment" placeholder="Ej: Dell, HP..." required />
-          </div>
-
-          <div class="mb-3">
-            <label for="codeEquipment" class="form-label">Código</label>
-            <input type="text" class="form-control" id="codeEquipment" name="codeEquipment" placeholder="Ej: 123ABC" required />
-          </div>
-
-          <div class="mb-3">
-            <label for="accassoriesEquipment" class="form-label">Accesorios</label>
-            <input type="text" class="form-control" id="accassoriesEquipment" name="accassoriesEquipment" placeholder="Ej: Cargador, Mouse..." required />
-          </div>
-          {% if current_user.rol == 'aprendiz' %}
+{% block content %}
+<div class="container">
+    <div class="form-container">
+        <h1 class="text-center mb-4">Agrega tu Equipo</h1>
+        <form action="{{ url_for('equipment.add') }}" method="post" novalidate>
             <div class="mb-3">
-              <label for="apprenticeId" class="form-label">Aprendiz</label>
-              <select class="form-select" id="apprenticeId" name="apprenticeId">
-                <option value="{{ current_user.idUser }}">{{ current_user.documento }}</option>
-              </select>
+                <label for="brandEquipment" class="form-label">Marca</label>
+                <input type="text" class="form-control" id="brandEquipment" name="brandEquipment" placeholder="Ej: Dell, HP..." required>
             </div>
-          {% elif current_user.rol == 'instructor' %}
+
             <div class="mb-3">
-              <label for="instructorId" class="form-label">Instructor</label>
-              <select class="form-select" id="instructorId" name="instructorId">
-                <option value="{{ current_user.idUser }}">{{ current_user.documento }}</option>
-              </select>
+                <label for="codeEquipment" class="form-label">Código</label>
+                <input type="text" class="form-control" id="codeEquipment" name="codeEquipment" placeholder="Ej: 123ABC" required>
             </div>
-            
-          {% endif %}
-          {% if current_user.rol == 'Aprendiz' %}
-            <input type="hidden" name="apprenticeId" value="{{ current_user.idUser }}">
-          {% elif current_user.rol == 'Instructor' %}
-            <input type="hidden" name="instructorId" value="{{ current_user.idUser }}">
-          {% endif %}
 
+            <div class="mb-3">
+                <label for="accassoriesEquipment" class="form-label">Accesorios</label>
+                <input type="text" class="form-control" id="accassoriesEquipment" name="accassoriesEquipment" placeholder="Ej: Cargador, Mouse..." required>
+            </div>
 
+            {% if current_user.rol == 'aprendiz' %}
+                <div class="mb-3">
+                    <label for="apprenticeId" class="form-label">Aprendiz</label>
+                    <select class="form-select" id="apprenticeId" name="apprenticeId" disabled>
+                        <option value="{{ current_user.idUser }}" selected>{{ current_user.documento }}</option>
+                    </select>
+                </div>
+            {% elif current_user.rol == 'instructor' %}
+                <div class="mb-3">
+                    <label for="instructorId" class="form-label">Instructor</label>
+                    <select class="form-select" id="instructorId" name="instructorId" disabled>
+                        <option value="{{ current_user.idUser }}" selected>{{ current_user.documento }}</option>
+                    </select>
+                </div>
+            {% endif %}
 
-          <div class="text-center">
-            <button type="submit" class="btn btn-success">Agregar</button>
-          </div>
+            {% if current_user.rol == 'Aprendiz' %}
+                <input type="hidden" name="apprenticeId" value="{{ current_user.idUser }}">
+            {% elif current_user.rol == 'Instructor' %}
+                <input type="hidden" name="instructorId" value="{{ current_user.idUser }}">
+            {% endif %}
+
+            <div class="d-grid">
+                <button type="submit" class="btn btn-verde rounded-pill">Agregar</button>
+            </div>
         </form>
-      </div>
     </div>
-  </div>
-
- 
-
-  <!-- Bootstrap JS Bundle -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+</div>
+{% endblock %}

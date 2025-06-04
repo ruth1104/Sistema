@@ -28,6 +28,26 @@
     .modal-backdrop {
         z-index: -1 !important;
     }
+    .tabla-scroll {
+    max-height: 400px; /* Puedes ajustar el alto */
+    overflow-y: auto;
+    overflow-x: auto; /* por si hay muchas columnas */
+    border: 1px solid #dee2e6; /* Opcional: para que se vea el borde como las tablas */
+}
+.tabla-scroll {
+    max-height: 400px; /* Puedes ajustar el alto */
+    overflow-y: auto;
+    overflow-x: auto; /* por si hay muchas columnas */
+    border: 1px solid #dee2e6; /* Opcional: para que se vea el borde como las tablas */
+}
+.tabla-scroll {
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+
+
+
 </style>
 {% endblock %}
 
@@ -57,7 +77,8 @@
                 </form>
 
             </div>
-            <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
+            <div class="table-responsive tabla-scroll" style="overflow-y: auto;">
+                
                 <div class="mb-3">
                     <input type="text" id="buscadorTabla" class="form-control" placeholder="Buscar...">
                 </div>
@@ -119,11 +140,13 @@
                                 <div class="d-flex flex-column gap-1">
                                     <a href="{{ url_for('record.edit', id=record.idRecords) }}" class="btn btn-outline-primary btn-sm me-1">Editar</a>
                                     <a href="{{ url_for('record.delete', id=record.idRecords) }}" class="btn btn-outline-danger btn-sm me-1">Eliminar</a>
-                                    <button class="btn btn-sm btn-success btn-salida" 
-                                            data-id="{{ record.idRecords }}" 
-                                            data-url="{{ url_for('record.salida', id=record.idRecords) }}">
-                                        Salida
-                                    </button>
+                                    {% if not record.dataExit %}
+                                        <button class="btn btn-sm btn-success btn-salida" 
+                                                data-id="{{ record.idRecords }}" 
+                                                data-url="{{ url_for('record.salida', id=record.idRecords) }}">
+                                            Salida
+                                        </button>
+                                    {% endif %}
 
                                 </div>
                             </td>
@@ -193,21 +216,20 @@
             });
         }
     });
-    document.querySelectorAll('.btn-salida').forEach(button => {
+        document.querySelectorAll('.btn-salida').forEach(button => {
         button.addEventListener('click', function () {
             const id = this.getAttribute('data-id');
             const url = this.getAttribute('data-url');
             const td = document.getElementById(`data-exit-${id}`);
 
-            fetch(url, { method: 'POST' })  // Asegúrate que esta ruta soporte POST
-                .then(response => {
-                    if (response.ok) {
-                        const now = new Date();
-                        const formattedDate = now.toLocaleString();  // Puedes formatear más si deseas
-                        td.innerHTML = `<span class="badge bg-success">${formattedDate}</span>`;
-                        this.remove();  // Oculta el botón después de usarlo
+            fetch(url, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.fecha) {
+                        td.innerHTML = `<span class="badge bg-success">${data.fecha}</span>`;
+                        this.remove();
                     } else {
-                        alert("Error al registrar la salida.");
+                        alert(data.error || "Error al registrar la salida.");
                     }
                 })
                 .catch(err => {
@@ -216,6 +238,7 @@
                 });
         });
     });
+
 
     document.getElementById("buscadorTabla").addEventListener("keyup", function () {
         let filtro = this.value.toLowerCase();

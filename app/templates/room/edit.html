@@ -1,20 +1,46 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <title>Editar Salòn</title>
-</head>
-<body>
-    {% include 'menu.html'%}
-    <h1>Editar Salòn</h1>
-    <form action="{{ url_for('room.edit', id=room.idRoom) }}" method="post">
-        <label for="nameRoom">Nombre Ambiente: </label>
-        <input type="text" name="nameRoom" value="{{ room.nameRoom}}" required>
+{% extends "base.html" %}
 
-        <button type="submit">Editar</button>
-    </form>
-</body>
-</html>
+{% block estilo %}
+<style>
+    .bg-verde-claro {
+        background-color: #6FC24A !important;
+    }
+
+    .btn-verde-claro {
+        background-color: #6FC24A;
+        border-color: #6FC24A;
+        color: white;
+    }
+
+    .btn-verde-claro:hover {
+        background-color: #5ca33f;
+        border-color: #5ca33f;
+    }
+
+    .border-verde-claro {
+        border-color: #6FC24A !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow rounded-4 border-verde-claro">
+        <div class="card-header bg-verde-claro text-white text-center rounded-top-4">
+            <h2 class="mb-0">Editar Salón</h2>
+        </div>
+        <div class="card-body">
+            <form action="{{ url_for('room.edit', id=room.idRoom) }}" method="post" novalidate>
+                <div class="mb-3">
+                    <label for="nameRoom" class="form-label">Nombre Ambiente:</label>
+                    <input type="text" name="nameRoom" id="nameRoom" class="form-control" 
+                           value="{{ room.nameRoom }}" required>
+                </div>
+                <div class="text-end">
+                    <button type="submit" class="btn btn-verde-claro">Editar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

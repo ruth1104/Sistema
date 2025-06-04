@@ -26,6 +26,7 @@ def before_request():
 @bp.route('/roomLoan')
 def index():
     roomLoan = RoomsLoans.query.all()
+    
     return render_template('roomLoan/index.html', roomLoan=roomLoan)
 
 @bp.route('/roomLoan/add', methods=['GET', 'POST'])

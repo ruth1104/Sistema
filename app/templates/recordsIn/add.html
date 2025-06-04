@@ -1,58 +1,136 @@
-{% extends "base.html" %} 
+{% extends "base.html" %}
+
+{% block estilo %}
+<style>
+  form.form-group {
+    max-width: 600px;
+    margin: 30px auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+  }
+
+  .btn-primary {
+    background-color: #6FC24A;
+    border-color: #6FC24A;
+    color: white;
+  }
+  .btn-primary:hover {
+    background-color: #5ca33f;
+    border-color: #5ca33f;
+    color: white;
+  }
+
+  .table-container {
+    max-width: 900px;
+    margin: 30px auto 50px auto;
+    background: #fff;
+    padding: 20px 30px;
+    border-radius: 15px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+  }
+
+  table thead th {
+    background-color: #6FC24A;
+    color: white;
+    border-color: #5ca33f;
+  }
+</style>
+{% endblock %}
+
 {% block content %}
-<h1 class="display-4 mb-4">Resguistrar Equipo Instructor</h1>
+<h1 class="display-4 mb-4 text-center">Registrar Equipo Instructor</h1>
 
 <form action="{{ url_for('recordsIn.add') }}" method="POST" class="form-group p-4 border rounded shadow-sm">
   <div class="mb-3">
     <label for="dataEntry" class="form-label">Entrega:</label>
-<input type="datetime-local" id="dataEntry" name="dataEntry" class="form-control rounded-pill" required />
-
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    let now = new Date();
-    let year = now.getFullYear();
-    let month = String(now.getMonth() + 1).padStart(2, "0"); // Asegura dos dígitos
-    let day = String(now.getDate()).padStart(2, "0");
-    let hours = String(now.getHours()).padStart(2, "0");
-    let minutes = String(now.getMinutes()).padStart(2, "0");
-
-    let currentDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
-    document.getElementById("dataEntry").value = currentDateTime;
-  });
-</script>
+    <input type="datetime-local" id="dataEntry" name="dataEntry" class="form-control rounded-pill" required />
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        let now = new Date();
+        let year = now.getFullYear();
+        let month = String(now.getMonth() + 1).padStart(2, "0");
+        let day = String(now.getDate()).padStart(2, "0");
+        let hours = String(now.getHours()).padStart(2, "0");
+        let minutes = String(now.getMinutes()).padStart(2, "0");
+        let currentDateTime = `${year}-${month}-${day}T${hours}:${minutes}`;
+        document.getElementById("dataEntry").value = currentDateTime;
+      });
+    </script>
   </div>
-  
+
   <div class="mb-3">
-      <label for="instructorId" class="form-label">Instructor:</label>
-      <select name="instructorId" id="instructorId" class="form-select rounded-pill" required>
-        <option value="0">- Seleccionar Instructor-</option>
-        {% for instructor in idata %}
+    <label for="instructorId" class="form-label">Instructor:</label>
+    <select name="instructorId" id="instructorId" class="form-select rounded-pill" required>
+      <option value="0" disabled selected>- Seleccionar Instructor -</option>
+      {% for instructor in idata %}
         <option value="{{ instructor.idUser }}"> {{ instructor.documento }} </option>
-        {% endfor %}
-      </select>
-    </div>
+      {% endfor %}
+    </select>
+  </div>
 
-    <div class="mb-3">
-      <label for="equipmentId" class="form-label">Equipo:</label>
-      <select name="equipmentId" id="equipmentId" class="form-select rounded-pill" required>
-        <option value="0">- Seleccionar Equipo-</option>
-        {% for equipment in equipments %}
+  <div class="mb-3">
+    <label for="equipmentId" class="form-label">Equipo:</label>
+    <select name="equipmentId" id="equipmentId" class="form-select rounded-pill" required>
+      <option value="0" disabled selected>- Seleccionar Equipo -</option>
+      {% for equipment in equipments %}
         <option value="{{ equipment.idEquipment }}"> {{ equipment.codeEquipment }} </option>
-        {% endfor %}
-      </select>
-    </div>
+      {% endfor %}
+    </select>
+  </div>
 
-    <div class="mb-3">
-      <label for="wachimanId" class="form-label">Celador:</label>
-      <select name="wachimanId" id="wachimanId" class="form-select rounded-pill" required>
-        <option value="0">- Seleccionar Celador-</option>
-        {% for celador in wdata %}
+  <div class="mb-3">
+    <label for="wachimanId" class="form-label">Celador:</label>
+    <select name="wachimanId" id="wachimanId" class="form-select rounded-pill" required>
+      <option value="0" disabled selected>- Seleccionar Celador -</option>
+      {% for celador in wdata %}
         <option value="{{ celador.idUser }}">{{ celador.documento }}</option>
-        {% endfor %}
-      </select>
-    </div>
+      {% endfor %}
+    </select>
+  </div>
 
-    <button type="submit" class="btn btn-primary rounded-pill">Agregar</button>
+  <button type="submit" class="btn btn-primary rounded-pill">Agregar</button>
 </form>
-<a href="{{ url_for('recordsIn.index') }}" class="btn btn-secondary rounded-pill">Volver</a>
+
+<div class="table-container">
+  <h2 class="mb-4 text-center">Registros de Equipo Instructor</h2>
+  <div class="table-responsive">
+    <table class="table table-striped table-hover align-middle">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Fecha y Hora</th>
+          <th>Instructor</th>
+          <th>Equipo</th>
+          <th>Celador</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% if recordsIn %}
+          {% for record in recordsIn %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ record.dataEntry.strftime('%Y-%m-%d %H:%M') }}</td>
+            <td>{{ record.instructor.documento }}</td>
+            <td>{{ record.equipment.codeEquipment }}</td>
+            <td>{{ record.wachiman.documento }}</td>
+            <td>
+              <a href="{{ url_for('recordsIn.edit', id=record.id) }}" class="btn btn-sm btn-outline-primary rounded-pill">Editar</a>
+              <a href="{{ url_for('recordsIn.delete', id=record.id) }}" class="btn btn-sm btn-outline-danger rounded-pill" onclick="return confirm('¿Seguro que quieres eliminar este registro?');">Eliminar</a>
+            </td>
+          </tr>
+          {% endfor %}
+        {% else %}
+          <tr>
+            <td colspan="6" class="text-center">No hay registros aún.</td>
+          </tr>
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<a href="{{ url_for('recordsIn.index') }}" class="btn btn-secondary rounded-pill d-block mx-auto mb-5" style="max-width: 150px;">Volver</a>
 {% endblock %}

@@ -1,59 +1,93 @@
 {% extends "base.html" %}
 
+{% block estilo %}
+<style>
+    .bg-verde-claro {
+        background-color: #6FC24A !important;
+    }
+
+    .btn-verde-claro {
+        background-color: #6FC24A;
+        border-color: #6FC24A;
+        color: white;
+    }
+
+    .btn-verde-claro:hover {
+        background-color: #5ca33f;
+        border-color: #5ca33f;
+    }
+
+    .border-verde-claro {
+        border-color: #6FC24A !important;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<h1>Editar Entrega de Ambiente</h1>
-<form action="{{ url_for('roomLoan.edit', id=roomLoan.idRoomLoan) }}" method="POST">
-    <div class="form-group">
-        <label for="date">Fecha de Entrega:</label>
-        <input type="datetime-local" name="date" id="date" class="form-control" 
-               value="{{ roomLoan.date.strftime('%Y-%m-%dT%H:%M') }}" required>
+<div class="container mt-5">
+    <div class="card shadow rounded-4 border-verde-claro">
+        <div class="card-header bg-verde-claro text-white text-center rounded-top-4">
+            <h2 class="mb-0">Editar Entrega de Ambiente</h2>
+        </div>
+        <div class="card-body">
+            <form action="{{ url_for('roomLoan.edit', id=roomLoan.idRoomLoan) }}" method="POST" novalidate>
+                <div class="mb-3">
+                    <label for="date" class="form-label">Fecha de Entrega:</label>
+                    <input type="datetime-local" name="date" id="date" class="form-control" 
+                           value="{{ roomLoan.date.strftime('%Y-%m-%dT%H:%M') }}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="returnDate" class="form-label">Fecha de Devolución:</label>
+                    <input type="datetime-local" name="returnDate" id="returnDate" class="form-control"
+                           value="{{ roomLoan.returnDate.strftime('%Y-%m-%dT%H:%M') }}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="instructorId" class="form-label">Instructor:</label>
+                    <select name="instructorId" id="instructorId" class="form-select" required>
+                        {% for instructor in idata %}
+                            <option value="{{ instructor.idUser }}" 
+                                    {% if instructor.idUser == roomLoan.instructorId %} selected {% endif %}>
+                                {{ instructor.documento }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="wachimanId" class="form-label">Celador:</label>
+                    <select class="form-select" id="wachimanId" name="wachimanId" required>
+                        <option value="" disabled>- Seleccionar Celador -</option>
+                        {% for celador in wdata %}
+                            <option value="{{ celador.idUser }}"
+                                {% if celador.idUser == roomLoan.wachimanId|int %} selected {% endif %}>
+                                {{ celador.documento }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="room" class="form-label">Salón:</label>
+                    <select name="roomId" id="room" class="form-select" required>
+                        {% for room in rooms %}
+                            <option value="{{ room.idRoom }}" 
+                                    {% if room.idRoom == roomLoan.roomId %} selected {% endif %}>
+                                {{ room.nameRoom }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="text-end">
+                    <button type="submit" class="btn btn-verde-claro">Actualizar Préstamo</button>
+                </div>
+            </form>
+        </div>
     </div>
-
-    <div class="form-group">
-        <label for="returnDate">Fecha de Devolución:</label>
-        <input type="datetime-local" name="returnDate" id="returnDate" class="form-control"
-               value="{{ roomLoan.returnDate.strftime('%Y-%m-%dT%H:%M') }}" required>
+    <div class="mt-3">
+        <a href="{{ url_for('roomLoan.index') }}" class="btn btn-secondary">Volver</a>
     </div>
-
-    <div class="form-group">
-        <label for="instructorId">Instructor:</label>
-        <select name="instructorId" id="instructorId" class="form-control" required>
-            {% for instructor in idata %}
-                <option value="{{ instructor.idUser }}" 
-                        {% if instructor.idUser == roomLoan.instructorId %} selected {% endif %}>
-                    {{ instructor.documento }}
-                </option>
-            {% endfor %}
-        </select>
-    </div>
-
-    <div class="mb-3">
-        <label for="wachimanId" class="form-label">Celador:</label>
-        <select class="form-select" id="wachimanId" name="wachimanId" required>
-            <option value="" disabled>- Seleccionar Celador -</option>
-            {% for celador in wdata %}
-            <option value="{{ celador.idUser }}"
-                {% if celador.idUser == roomLoan.wachimanId|int %} selected {% endif %}>
-                {{ celador.documento }}
-            </option>
-            {% endfor %}
-        </select>
-    </div>
-
-    <div class="form-group">
-        <label for="room">Salón:</label>
-        <select name="roomId" id="room" class="form-control" required>
-            {% for room in rooms %}
-                <option value="{{ room.idRoom }}" 
-                        {% if room.idRoom == roomLoan.roomId %} selected {% endif %}>
-                    {{ room.nameRoom }}
-                </option>
-            {% endfor %}
-        </select>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Actualizar Préstamo</button>
-</form>
-
-<a href="{{ url_for('roomLoan.index') }}" class="btn btn-secondary">Volver</a>
+</div>
 {% endblock %}

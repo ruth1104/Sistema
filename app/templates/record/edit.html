@@ -1,65 +1,96 @@
 {% extends "base.html" %}
+
+{% block estilo %}
+<style>
+    .bg-verde-claro {
+        background-color: #6FC24A !important;
+    }
+
+    .btn-verde-claro {
+        background-color: #6FC24A;
+        border-color: #6FC24A;
+        color: white;
+    }
+
+    .btn-verde-claro:hover {
+        background-color: #5ca33f;
+        border-color: #5ca33f;
+    }
+
+    .border-verde-claro {
+        border-color: #6FC24A !important;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
+<div class="container mt-5">
+    <div class="card shadow rounded-4 border-verde-claro">
+        <div class="card-header bg-verde-claro text-white text-center rounded-top-4">
+            <h2 class="mb-0">Editar Registro</h2>
+        </div>
+        <div class="card-body">
+            <form action="{{ url_for('record.edit', id=record.idRecords) }}" method="POST" novalidate>
+                <div class="mb-3">
+                    <label for="dataEntry" class="form-label">Entrada:</label>
+                    <input type="datetime-local" name="dataEntry" id="dataEntry" class="form-control"
+                           value="{{ record.dataEntry.strftime('%Y-%m-%dT%H:%M') }}" required>
+                </div>
 
-<h1>Editar </h1>
-<form action="{{ url_for('record.edit', id=record.idRecords) }}" method="POST">
-    <div class="form-group">
-        <label for="dataEntry">Entrada:</label>
-        <input type="datetime-local" name="dataEntry" id="dataEntry" class="form-control" 
-               value="{{ record.dataEntry.strftime('%Y-%m-%dT%H:%M') }}" required>
+                <div class="mb-3">
+                    <label for="dataExit" class="form-label">Salida:</label>
+                    <input type="datetime-local" name="dataExit" id="dataExit" class="form-control"
+                           value="{{ record.dataExit.strftime('%Y-%m-%dT%H:%M') }}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="apprenticeId" class="form-label">Aprendiz:</label>
+                    <select name="apprenticeId" id="apprenticeId" class="form-select" required>
+                        <option value="" disabled>- Seleccionar Aprendiz -</option>
+                        {% for apprentice in adata %}
+                        <option value="{{ apprentice.idUser }}"
+                            {% if apprentice.idUser == record.apprenticeId|int %} selected {% endif %}>
+                            {{ apprentice.documento }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                    <div class="invalid-feedback">
+                        Selecciona un aprendiz.
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="equipmentId" class="form-label">Equipo:</label>
+                    <select name="equipmentId" id="equipmentId" class="form-select" required>
+                        {% for equipment in equipment %}
+                        <option value="{{ equipment.idEquipment }}"
+                            {% if equipment.idEquipment == record.equipmentId %} selected {% endif %}>
+                            {{ equipment.codeEquipment }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="wachimanId" class="form-label">Celador:</label>
+                    <select class="form-select" id="wachimanId" name="wachimanId" required>
+                        <option value="" disabled>- Seleccionar Celador -</option>
+                        {% for celador in wdata %}
+                        <option value="{{ celador.idUser }}"
+                            {% if celador.idUser == record.wachimanId|int %} selected {% endif %}>
+                            {{ celador.documento }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="text-end">
+                    <button type="submit" class="btn btn-verde-claro">Guardar Cambios</button>
+                </div>
+            </form>
+
+            <a href="{{ url_for('roomLoan.index') }}" class="btn btn-secondary mt-3">Volver</a>
+        </div>
     </div>
-
-    <div class="form-group">
-        <label for="dataExit">Salida:</label>
-        <input type="datetime-local" name="dataExit" id="dataExit" class="form-control"
-               value="{{ record.dataExit.strftime('%Y-%m-%dT%H:%M') }}" required>
-    </div>
-
-   <!-- Campo Aprendiz -->
-    <div class="mb-3">
-    <label for="apprenticeId" class="form-label">Aprendiz:</label>
-    <select name="apprenticeId" id="apprenticeId" class="form-select" required>
-        <option value="" disabled>- Seleccionar Aprendiz -</option>
-        {% for apprentice in adata %}
-        <option value="{{ apprentice.idUser }}"
-            {% if apprentice.idUser == record.apprenticeId|int %} selected {% endif %}>
-            {{ apprentice.documento }}
-        </option>
-        {% endfor %}
-    </select>
-    <div class="invalid-feedback">
-        selecciona un aprendiz.
-    </div>
-    </div>
-
-    <div class="form-group">
-        <label for="equipmentId">Equipo:</label>
-        <select name="equipmentId" id="equipmentId" class="form-control" required>
-            {% for equipment in equipment %}
-                <option value="{{ equipment.idEquipment }}" 
-                        {% if equipment.idEquipment == record.equipmentId %} selected {% endif %}>
-                    {{ equipment.codeEquipment }}
-                </option>
-            {% endfor %}
-        </select>
-    </div>
-
-    <!-- Campo Celador -->
-    <div class="mb-3">
-        <label for="wachimanId" class="form-label">Celador:</label>
-        <select class="form-select" id="wachimanId" name="wachimanId" required>
-            <option value="" disabled>- Seleccionar Celador -</option>
-            {% for celador in wdata %}
-            <option value="{{ celador.idUser }}"
-                {% if celador.idUser == record.wachimanId|int %} selected {% endif %}>
-                {{ celador.documento }}
-            </option>
-            {% endfor %}
-        </select>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-</form>
-
-<a href="{{ url_for('roomLoan.index') }}" class="btn btn-secondary">Volver</a>
+</div>
 {% endblock %}

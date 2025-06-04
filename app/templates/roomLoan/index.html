@@ -82,7 +82,7 @@
                         {% for roomLoan in roomLoan %}
                         <tr>
                             <td>{{ roomLoan.idRoomLoan }}</td>
-                            <td>{{ roomLoan.date }}</td>
+                            <td>{{ roomLoan.date}}</td>
                             <td id="data-exit-{{ roomLoan.idRoomLoan }}">
                                 {% if roomLoan.returnDate %}
                                     <span class="badge bg-success">{{ roomLoan.returnDate }}</span>

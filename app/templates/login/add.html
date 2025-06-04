@@ -3,76 +3,200 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crear Cuenta</title>
+    <title>Crear Cuenta Profesional</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/logoSena.png') }}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5; /* Un fondo gris claro para un look suave */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .card {
+            border-radius: 15px; /* Bordes más redondeados */
+            border: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); /* Sombra más pronunciada pero suave */
+            overflow: hidden; /* Asegura que el border-radius se aplique al contenido interno */
+        }
+        .card-header {
+            background-color: #6CBF3C !important; /* Color principal de tu proyecto */
+            color: white;
+            border-bottom: none;
+            padding: 25px 20px;
+            font-weight: 600;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .card-header .material-symbols-outlined {
+            font-size: 2rem;
+        }
+        .form-label {
+            font-weight: 500;
+            color: #4a4a4a;
+            margin-bottom: 8px; /* Espacio debajo de la etiqueta */
+        }
+        .input-group-text {
+            background-color: #f8f9fa; /* Fondo ligero para los iconos */
+            border-right: none;
+            border-color: #e0e0e0; /* Un borde más suave */
+            color: #6c757d;
+            border-radius: 8px 0 0 8px; /* Bordes redondeados solo a la izquierda */
+        }
+        .form-control {
+            border-left: none;
+            border-color: #e0e0e0;
+            border-radius: 0 8px 8px 0; /* Bordes redondeados solo a la derecha */
+            padding: 10px 15px; /* Más padding para una mejor estética */
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .form-control:focus {
+            border-color: #6CBF3C; /* Color de foco */
+            box-shadow: 0 0 0 0.25rem rgba(108, 191, 60, 0.25); /* Sombra de foco */
+            outline: none;
+        }
+        .form-select {
+            border-left: none;
+            border-color: #e0e0e0;
+            border-radius: 0 8px 8px 0;
+            padding: 10px 15px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .form-select:focus {
+            border-color: #6CBF3C;
+            box-shadow: 0 0 0 0.25rem rgba(108, 191, 60, 0.25);
+            outline: none;
+        }
+        .btn-primary {
+            background-color: #6CBF3C !important;
+            border-color: #6CBF3C !important;
+            padding: 12px 20px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 8px; /* Menos redondeado que el original, más moderno */
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .btn-primary:hover {
+            background-color: #5BAA34 !important; /* Un tono un poco más oscuro al pasar el ratón */
+            transform: translateY(-2px); /* Pequeño efecto de elevación */
+        }
+        .card-footer {
+            background-color: #fdfdfd;
+            border-top: none;
+            padding: 20px;
+            font-size: 0.9rem;
+            color: #777;
+        }
+        .card-footer a {
+            color: #6CBF3C;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        .card-footer a:hover {
+            color: #5BAA34;
+            text-decoration: underline;
+        }
+        .material-symbols-outlined {
+            font-variation-settings:
+            'FILL' 0,
+            'wght' 400,
+            'GRAD' 0,
+            'opsz' 24;
+        }
+        .input-group .btn-outline-secondary {
+            border: 1px solid #e0e0e0;
+            border-left: none;
+            border-radius: 0 8px 8px 0;
+            color: #6c757d;
+            background-color: #f8f9fa;
+        }
+        .input-group .btn-outline-secondary:hover {
+            background-color: #e9ecef;
+            color: #495057;
+        }
+    </style>
 </head>
 <body class="bg-light">
 
-<div class="container mt-5">
+<div class="container mt-5 mb-5">
     <div class="row justify-content-center">
         <div class="col-md-6 col-lg-5">
             <div class="card shadow-lg">
-                <div class="card-header text-center bg-primary text-white">
-                    <h4><i class="bi bi-person-plus-fill me-2"></i>Crear Cuenta</h4>
+                <div class="card-header">
+                    <span class="material-symbols-outlined">person_add</span>
+                    Crear Cuenta
                 </div>
-                <div class="card-body">
+                <div class="card-body p-4">
                     <form action="{{ url_for('auth.add') }}" method="post">
                         <div class="mb-3">
                             <label for="documento" class="form-label">Documento</label>
                             <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-person-badge"></i></span>
-                                <input type="text" class="form-control" id="documento" name="documento" required>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Nombre y Apellido</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-person-fill"></i></span>
-                                <input type="text" class="form-control" id="name" name="name" required>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Contraseña</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
-                                <input type="password" class="form-control" id="password" name="password" required>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="Tel" class="form-label">Teléfono</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-telephone-fill"></i></span>
-                                <input type="text" class="form-control" id="Tel" name="Tel" required>
+                                <span class="input-group-text"><span class="material-symbols-outlined">badge</span></span>
+                                <input type="text" class="form-control" id="documento" name="documento" placeholder="Ingresa tu documento" required>
                             </div>
                         </div>
 
                         <div class="mb-3">
                             <label for="gmail" class="form-label">Correo Electrónico</label>
                             <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-envelope-fill"></i></span>
-                                <input type="email" class="form-control" id="gmail" name="gmail" required>
+                                <span class="input-group-text"><span class="material-symbols-outlined">mail</span></span>
+                                <input type="email" class="form-control" id="gmail" name="gmail" placeholder="ejemplo@dominio.com" required>
                             </div>
                         </div>
 
                         <div class="mb-3">
-                            <label for="rol" class="form-label">Rol</label>
+                            <label for="name" class="form-label">Nombre y Apellido</label>
                             <div class="input-group">
-                                <span class="input-group-text"><i class="bi bi-clipboard-check-fill"></i></span>
-                                <select class="form-select" id="rol" name="rol" required>
-                                    <option value="Aprendiz" selected>Aprendiz</option>
-                                    <option value="Celador">Celador</option>
-                                    <option value="Instructor">Instructor</option>
-                                </select>
+                                <span class="input-group-text"><span class="material-symbols-outlined">person</span></span>
+                                <input type="text" class="form-control" id="name" name="name" placeholder="Tu nombre completo" required>
                             </div>
                         </div>
 
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary rounded-pill">
-                                <i class="bi bi-person-plus-fill me-1"></i>Agregar Usuario
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Contraseña</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><span class="material-symbols-outlined">lock</span></span>
+                                <input type="password" class="form-control" id="password" name="password" placeholder="Crea una contraseña segura" required>
+                                <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                    <span class="material-symbols-outlined" id="passwordToggleIcon">visibility</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="Tel" class="form-label">Teléfono</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><span class="material-symbols-outlined">phone</span></span>
+                                <input type="text" class="form-control" id="Tel" name="Tel" placeholder="Número de teléfono" required>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="rol" class="form-label">Rol</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><span class="material-symbols-outlined">work</span></span>
+                                <select class="form-select" id="rol" name="rol" required>
+                                    <option value="Aprendiz" selected>Aprendiz</option>
+                                    <option value="Instructor">Instructor</option>
+                                    <option value="Administrador">Administrador</option>
+                                    </select>
+                            </div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                <span class="material-symbols-outlined me-2">person_add</span>
+                                Agregar Usuario
                             </button>
                         </div>
                     </form>
@@ -84,6 +208,29 @@
         </div>
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const togglePassword = document.getElementById('togglePassword');
+        const password = document.getElementById('password');
+        const passwordToggleIcon = document.getElementById('passwordToggleIcon');
+
+        if (togglePassword && password && passwordToggleIcon) {
+            togglePassword.addEventListener('click', function() {
+                const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                password.setAttribute('type', type);
+
+                // Cambia el icono de visibilidad
+                if (type === 'password') {
+                    passwordToggleIcon.textContent = 'visibility';
+                } else {
+                    passwordToggleIcon.textContent = 'visibility_off';
+                }
+            });
+        }
+    });
+</script>
 
 </body>
 </html>

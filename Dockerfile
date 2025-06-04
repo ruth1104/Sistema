@@ -1,26 +1,20 @@
-FROM python:3.13-alpine
+FROM python:3.13-slim
 
 # Instalar dependencias necesarias del sistema, incluyendo zbar
-RUN apk add --no-cache \
-    zbar \
-    build-base \
-    libffi-dev \
-    jpeg-dev \
-    zlib-dev \
-    tiff-dev \
-    freetype-dev \
-    lcms2-dev \
-    openjpeg-dev \
-    harfbuzz-dev \
-    fribidi-dev \
-    libxcb-dev \
-    libx11-dev
+RUN apt-get update && apt-get install -y \
+    libzbar0 \
+    libzbar-dev \
+    libjpeg-dev \
+    zlib1g-dev \
+    gcc \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Establecer el directorio de trabajo
 WORKDIR /app
 
 # Copiar e instalar dependencias de Python
 COPY requirements.txt .
+RUN pip install --upgrade pip
 RUN pip install --default-timeout=100 --no-cache-dir -r requirements.txt
 
 # Copiar el resto del código
